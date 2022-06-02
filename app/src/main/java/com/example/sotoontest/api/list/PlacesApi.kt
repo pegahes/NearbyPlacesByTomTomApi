@@ -16,12 +16,12 @@ interface PlacesApi {
     @Headers("key: $API_KEY")
     @GET("search/{versionNumber}/nearbySearch/.{ext}")
     suspend fun getNearbyPlaces(
-        @Path("versionNumber") versionNumber: String,
-        @Path("ext") ext: String,
-        @Query("lat") lat: Float,
-        @Query("lon") lon: Float,
-        @Query("limit") limit: Int,
-        @Query("ofs") ofs: Int
+        @Path("versionNumber") versionNumber: Int?= 2,
+        @Path("ext") ext: String?="json",
+        @Query("lat") lat: Float?= 37.337F,
+        @Query("lon") lon: Float?= -121.89F,
+        @Query("limit") limit: Int?= 10,
+        @Query("ofs") ofs: Int?= 0
     ): PlacesResponse
 
 }
