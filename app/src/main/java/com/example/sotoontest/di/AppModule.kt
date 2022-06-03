@@ -1,3 +1,4 @@
+package com.example.sotoontest.di
 
 import android.app.Application
 import androidx.room.Room
