@@ -1,3 +1,5 @@
 package com.example.sotoontest.api.list
 
-data class PlacesResponse (val results: List<PlacesDto>)
+import com.example.sotoontest.data.list.Places
+
+data class PlacesResponse (val results: List<Places>)

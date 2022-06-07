@@ -2,13 +2,14 @@ package com.example.sotoontest.features.list
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sotoontest.data.list.Places
 import com.example.sotoontest.databinding.ItemPlaceListBinding
 
-class PlacesListAdapter : ListAdapter<Places, PlacesListAdapter.PlacesListAdapterViewHolder>(PlacesComparator()) {
+class PlacesListPagingAdapter (private val listener: clickListener) :
+    PagingDataAdapter<Places, PlacesListPagingAdapter.PlacesListAdapterViewHolder>(PlacesComparator()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlacesListAdapterViewHolder {
         val binding =
@@ -40,5 +41,9 @@ class PlacesListAdapter : ListAdapter<Places, PlacesListAdapter.PlacesListAdapte
 
         override fun areContentsTheSame(oldItem: Places, newItem: Places) =
             oldItem == newItem
+    }
+
+    interface clickListener{
+        fun onClickListener(place : Places)
     }
 }

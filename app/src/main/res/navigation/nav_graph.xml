@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/placesListFragment">
+
+    <fragment
+        android:id="@+id/placesListFragment"
+        android:name="com.example.sotoontest.features.list.PlacesListFragment"
+        android:label="place list"
+        tools:layout="@layout/fragment_places_list">
+        <action
+            android:id="@+id/action_placesListFragment_to_placesDetailsFragment"
+            app:destination="@id/placesDetailsFragment" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/placesDetailsFragment"
+        android:name="com.example.sotoontest.features.detail.PlacesDetailFragment"
+        android:label="place details"
+        tools:layout="@layout/fragment_places_detail">
+<!--        <argument-->
+<!--            android:name="place"-->
+<!--            app:argType="com.example.sotoontest.data.list.Places" />-->
+    </fragment>
+
+
+</navigation>

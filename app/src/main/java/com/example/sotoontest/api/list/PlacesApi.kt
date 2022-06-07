@@ -13,15 +13,13 @@ interface PlacesApi {
         const val API_KEY = BuildConfig.TOMTOM_API_ACCESS_KEY
     }
 
-    @Headers("key: $API_KEY")
-    @GET("search/{versionNumber}/nearbySearch/.{ext}")
+    @GET("search/2/nearbySearch/.json")
     suspend fun getNearbyPlaces(
-        @Path("versionNumber") versionNumber: Int?= 2,
-        @Path("ext") ext: String?="json",
-        @Query("lat") lat: Float?= 37.337F,
-        @Query("lon") lon: Float?= -121.89F,
-        @Query("limit") limit: Int?= 10,
-        @Query("ofs") ofs: Int?= 0
-    ): PlacesResponse
+        @Query("lat") lat: Float = 37.337F,
+        @Query("lon") lon: Float = -121.89F,
+        @Query("limit") limit: Int = 10,
+        @Query("ofs") ofs: Int = 0,
+        @Query ("key") api_key: String = API_KEY
+        ): PlacesResponse
 
 }
