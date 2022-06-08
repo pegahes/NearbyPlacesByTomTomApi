@@ -46,13 +46,13 @@ class PlacesListRemoteMediator (
                     id = serverSearchResultArticle.id,
                     latLonQuery = latLongQuery,
                     dist = serverSearchResultArticle.dist,
-                    name = serverSearchResultArticle.name,
-                    phone = serverSearchResultArticle.phone,
-                    country = serverSearchResultArticle.country,
-                    streetName = serverSearchResultArticle.streetName,
-                    streetNumber = serverSearchResultArticle.streetNumber,
-                    freeformAddress = serverSearchResultArticle.freeformAddress,
-                    localName = serverSearchResultArticle.localName,
+                    name = serverSearchResultArticle.poi?.name,
+                    phone = serverSearchResultArticle.poi?.phone,
+                    country = serverSearchResultArticle.address?.country,
+                    streetName = serverSearchResultArticle.address?.streetName,
+                    streetNumber = serverSearchResultArticle.address?.streetNumber,
+                    freeformAddress = serverSearchResultArticle.address?.freeformAddress,
+                    localName = serverSearchResultArticle.address?.localName,
                     queryPosition = queryPosition
                 )
             }

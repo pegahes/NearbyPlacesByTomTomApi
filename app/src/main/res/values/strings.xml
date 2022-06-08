@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">SotoonTest</string>
+    <string name="app_name">TomTom API</string>
     <string name="unknown_error_occurred">خطایی رخ داده است</string>
-    <string name="could_not_load_search_results">Could not load search results: %s</string>
+    <string name="could_not_load_search_results">no more data avalable in database</string>
 
 </resources>

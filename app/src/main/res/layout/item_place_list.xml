@@ -4,7 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:id="@+id/layout_click"
+    android:clickable="true"
+    android:focusable="true"
     android:background="#FAFAFA">
+
+    <ImageView
+        android:id="@+id/icon_img"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/ic_home"
+        app:tint="@color/shimmer_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_margin="16dp"/>
 
     <TextView
         android:id="@+id/text_view_title"
@@ -12,10 +26,11 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:textColor="#212121"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:textStyle="bold"
+        android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/icon_img"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="title" />
 
@@ -28,17 +43,18 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:textColor="#616161"
-        android:textSize="16sp"
+        android:textSize="14sp"
+        android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/icon_img"
         app:layout_constraintTop_toBottomOf="@+id/text_view_title"
         tools:text="distance" />
 
     <View
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:background="#9575CD"
+        android:background="@color/blue_light"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

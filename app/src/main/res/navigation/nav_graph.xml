@@ -3,7 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/placesListFragment">
+    app:startDestination="@id/placesPermissionFragment">
+
+    <fragment
+        android:id="@+id/placesPermissionFragment"
+        android:name="com.example.sotoontest.features.permission.AskPermissionFragment"
+        android:label="ask permission"
+        tools:layout="@layout/fragment_ask_permission">
+        <action
+            android:id="@+id/action_placesPermissionFragment_to_placesListFragment"
+            app:destination="@id/placesListFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/placesListFragment"
@@ -12,19 +22,22 @@
         tools:layout="@layout/fragment_places_list">
         <action
             android:id="@+id/action_placesListFragment_to_placesDetailsFragment"
-            app:destination="@id/placesDetailsFragment" />
+            app:destination="@id/placesDetailsFragment" >
+        </action>
+        <argument
+            android:name="location"
+            app:argType="string" />
     </fragment>
-
 
     <fragment
         android:id="@+id/placesDetailsFragment"
         android:name="com.example.sotoontest.features.detail.PlacesDetailFragment"
         android:label="place details"
         tools:layout="@layout/fragment_places_detail">
-<!--        <argument-->
-<!--            android:name="place"-->
-<!--            app:argType="com.example.sotoontest.data.list.Places" />-->
-    </fragment>
 
+        <argument
+            android:name="place"
+            app:argType="com.example.sotoontest.data.list.Places" />
+    </fragment>
 
 </navigation>

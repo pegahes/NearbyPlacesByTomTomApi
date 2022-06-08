@@ -15,10 +15,11 @@ interface PlacesApi {
 
     @GET("search/2/nearbySearch/.json")
     suspend fun getNearbyPlaces(
-        @Query("lat") lat: Float = 37.337F,
-        @Query("lon") lon: Float = -121.89F,
-        @Query("limit") limit: Int = 10,
-        @Query("ofs") ofs: Int = 0,
+        @Query("lat") lat: Float = 40.756619F,
+        @Query("lon") lon: Float = -73.978430F,
+        @Query("limit") limit: Int,
+        @Query("ofs") ofs: Int,
+        @Query("radius") radius: Int? = 2000,
         @Query ("key") api_key: String = API_KEY
         ): PlacesResponse
 

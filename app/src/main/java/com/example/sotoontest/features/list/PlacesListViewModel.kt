@@ -16,7 +16,7 @@ class PlacesListViewModel @Inject constructor (
     state: SavedStateHandle
         ) : ViewModel() {
 
-    private val currentLatLonQuery = state.getLiveData<String?>("currentLatLonQuery", null)
+    val currentLatLonQuery = state.getLiveData<String?>("currentLatLonQuery", null)
     val hasCurrentLatLonQuery = currentLatLonQuery.asFlow().map { it != null }
 
     var refreshInProgress = false
@@ -33,7 +33,7 @@ class PlacesListViewModel @Inject constructor (
         } ?: emptyFlow()
     }.cachedIn(viewModelScope)
 
-    fun onNewLatLon(query: String) {
+    fun onNewLatLon(query: String?) {
         refreshOnInit = true
         currentLatLonQuery.value = query
         newQueryInProgress = true

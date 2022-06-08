@@ -1,11 +1,16 @@
 package com.example.sotoontest.features.list
 
+import android.content.Context
+import android.content.SharedPreferences
+import android.location.Location
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.sotoontest.R
@@ -14,7 +19,6 @@ import com.example.sotoontest.databinding.FragmentPlacesListBinding
 import com.example.sotoontest.utils.showIfOrInvisible
 import com.example.sotoontest.utils.showSnackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.filter
@@ -23,10 +27,13 @@ import kotlinx.coroutines.flow.filter
 class PlacesListFragment : Fragment(R.layout.fragment_places_list),
     PlacesListPagingAdapter.clickListener {
 
+    private val args by navArgs<PlacesListFragmentArgs>()
+
     private val viewModel by viewModels<PlacesListViewModel>()
 
     private var _binding: FragmentPlacesListBinding? = null
     private val binding get() = _binding!!
+    private lateinit var preferences: SharedPreferences
 
     private lateinit var placeAdapter: PlacesListPagingAdapter
 
@@ -35,10 +42,12 @@ class PlacesListFragment : Fragment(R.layout.fragment_places_list),
         _binding = FragmentPlacesListBinding.bind(view)
 
         placeAdapter = PlacesListPagingAdapter(this)
+        placeAdapter.setListener()
 
-        viewModel.onNewLatLon("37.337F/-121.89F")
-        bindDataToAdapter()
-
+        preferences = this.activity!!.getSharedPreferences("latlon", Context.MODE_PRIVATE)
+        binding.apply {
+            checkIfNewLocation(args.location)
+        }
     }
 
     fun bindDataToAdapter() {
@@ -51,7 +60,6 @@ class PlacesListFragment : Fragment(R.layout.fragment_places_list),
                 setHasFixedSize(true)
                 itemAnimator?.changeDuration = 0
             }
-
 
             viewLifecycleOwner.lifecycleScope.launchWhenStarted {
                 viewModel.searchResults.collectLatest { data ->
@@ -128,11 +136,7 @@ class PlacesListFragment : Fragment(R.layout.fragment_places_list),
                                 textViewError.isVisible = noCachedResults
                                 buttonRetry.isVisible = noCachedResults
 
-                                val errorMessage = getString(
-                                    R.string.could_not_load_search_results,
-                                    refresh.error.localizedMessage
-                                        ?: getString(R.string.unknown_error_occurred)
-                                )
+                                val errorMessage = getString(R.string.could_not_load_search_results)
                                 textViewError.text = errorMessage
 
                                 if (viewModel.refreshInProgress) {
@@ -156,13 +160,63 @@ class PlacesListFragment : Fragment(R.layout.fragment_places_list),
         }
     }
 
+    private fun checkIfNewLocation(location: String) {
+        if (location == "0") {
+            //no new location load the latest results from database
+            bindDataToAdapter()
+        } else {
+            getLatestLatLongFromSharedPref(location)
+        }
+    }
+
+    fun distanceBetween(
+        firstLat: Double, firstLon: Double,
+        secondLat: Double, secondLon: Double
+    ): Float {
+        val first = Location("")
+        first.latitude = firstLat
+        first.longitude = firstLon
+
+        val second = Location("")
+        second.latitude = secondLat
+        second.longitude = secondLon
+
+        return first.distanceTo(second)
+
+    }
+
+    private fun getLatestLatLongFromSharedPref(latLong: String) {
+        if (preferences.contains("location")) {
+            val currentLocation = latLong.split("/")
+            val oldLocation = preferences.getString("location", "")!!.split("/")
+            if (distanceBetween(
+                    currentLocation[0].toDouble(),
+                    currentLocation[1].toDouble(),
+                    oldLocation[0].toDouble(),
+                    oldLocation[1].toDouble(),
+                ) > 100F
+            ) {
+                viewModel.onNewLatLon(latLong)
+                bindDataToAdapter()
+            }else{
+                viewModel.currentLatLonQuery.value = preferences.getString("location", "")
+                bindDataToAdapter()
+            }
+        } else {
+            setLatestLatLongToSharedPref(latLong)
+            viewModel.onNewLatLon(latLong)
+            bindDataToAdapter()
+        }
+    }
+
+    fun setLatestLatLongToSharedPref(latLong: String) {
+        val editor = preferences.edit()
+        editor.putString("location", latLong)
+        editor.commit()
+    }
+
     override fun onClickListener(place: Places) {
+        val action = PlacesListFragmentDirections.actionPlacesListFragmentToPlacesDetailsFragment(place)
+        findNavController().navigate(action)
     }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-        binding.recyclerPlacesList.adapter = null
-    }
-
 }
