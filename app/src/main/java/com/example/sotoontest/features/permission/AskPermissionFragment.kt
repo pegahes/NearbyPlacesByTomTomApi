@@ -8,15 +8,14 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.location.LocationManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.example.sotoontest.R
 import com.example.sotoontest.databinding.FragmentAskPermissionBinding
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -27,7 +26,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resumeWithException
-import androidx.navigation.fragment.findNavController
 
 
 @AndroidEntryPoint
@@ -60,8 +58,7 @@ class AskPermissionFragment : Fragment(R.layout.fragment_ask_permission) {
             val cts = CancellationTokenSource()
             getCurrentLocation(priority, cts.token)
                 .addOnSuccessListener {location ->
-
-                    it.resume(location,onCancel() )
+                    onLocationChanged(location)
                 }.addOnFailureListener {e ->
                     it.resumeWithException(e)
                 }
@@ -70,10 +67,11 @@ class AskPermissionFragment : Fragment(R.layout.fragment_ask_permission) {
                 cts.cancel()
             }
         }
+
     }
 
-    fun onCancel(): ((Throwable) -> Unit)? {
-        return null
+    private fun onLocationChanged(location: Location) {
+        startPlaceListFragment(location)
     }
 
 
@@ -122,12 +120,10 @@ class AskPermissionFragment : Fragment(R.layout.fragment_ask_permission) {
     private fun startPlaceListFragment(location: Location?) {
         location?.let {
             val locationQuery = it.latitude.toString() + "/" + it.longitude
-            Log.d("pegaaaa",locationQuery )
             val action = AskPermissionFragmentDirections.actionPlacesPermissionFragmentToPlacesListFragment(locationQuery)
             findNavController().navigate(action)
         }
         if (location == null){
-            Log.d("pegaaaa", "null")
             val action = AskPermissionFragmentDirections.actionPlacesPermissionFragmentToPlacesListFragment("0")
             findNavController().navigate(action)
         }

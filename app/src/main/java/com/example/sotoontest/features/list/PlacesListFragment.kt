@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.location.Location
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -161,12 +162,7 @@ class PlacesListFragment : Fragment(R.layout.fragment_places_list),
     }
 
     private fun checkIfNewLocation(location: String) {
-        if (location == "0") {
-            //no new location load the latest results from database
-            bindDataToAdapter()
-        } else {
-            getLatestLatLongFromSharedPref(location)
-        }
+        getLatestLatLongFromSharedPref(location)
     }
 
     fun distanceBetween(
@@ -186,7 +182,7 @@ class PlacesListFragment : Fragment(R.layout.fragment_places_list),
     }
 
     private fun getLatestLatLongFromSharedPref(latLong: String) {
-        if (preferences.contains("location")) {
+        if (preferences.contains("location") && latLong != "0") {
             val currentLocation = latLong.split("/")
             val oldLocation = preferences.getString("location", "")!!.split("/")
             if (distanceBetween(
@@ -198,25 +194,34 @@ class PlacesListFragment : Fragment(R.layout.fragment_places_list),
             ) {
                 viewModel.onNewLatLon(latLong)
                 bindDataToAdapter()
-            }else{
+            } else {
                 viewModel.currentLatLonQuery.value = preferences.getString("location", "")
                 bindDataToAdapter()
             }
-        } else {
+        } else if (!preferences.contains("location")) {
             setLatestLatLongToSharedPref(latLong)
-            viewModel.onNewLatLon(latLong)
+        } else if (preferences.contains("location") && latLong == "0") {
+            viewModel.onNewLatLon(preferences.getString("location", ""))
             bindDataToAdapter()
         }
     }
 
-    fun setLatestLatLongToSharedPref(latLong: String) {
-        val editor = preferences.edit()
-        editor.putString("location", latLong)
-        editor.commit()
+    private fun setLatestLatLongToSharedPref(latLong: String) {
+        if (latLong != "0") {
+            val editor = preferences.edit()
+            editor.putString("location", latLong)
+            editor.commit()
+            viewModel.onNewLatLon(latLong)
+            bindDataToAdapter()
+        } else {
+            Toast.makeText(context, "You should first turn on your GPS", Toast.LENGTH_LONG).show()
+        }
     }
 
+
     override fun onClickListener(place: Places) {
-        val action = PlacesListFragmentDirections.actionPlacesListFragmentToPlacesDetailsFragment(place)
+        val action =
+            PlacesListFragmentDirections.actionPlacesListFragmentToPlacesDetailsFragment(place)
         findNavController().navigate(action)
     }
 }
