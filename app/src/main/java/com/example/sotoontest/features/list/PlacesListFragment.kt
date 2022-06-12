@@ -35,6 +35,9 @@ class PlacesListFragment : Fragment(R.layout.fragment_places_list),
     private var _binding: FragmentPlacesListBinding? = null
     private val binding get() = _binding!!
     private lateinit var preferences: SharedPreferences
+    private var sharedPrefName = "latlon"
+    private var sharedPrefKey = "location"
+    var nullLocationValue = "0"
 
     private lateinit var placeAdapter: PlacesListPagingAdapter
 
@@ -42,16 +45,28 @@ class PlacesListFragment : Fragment(R.layout.fragment_places_list),
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentPlacesListBinding.bind(view)
 
-        placeAdapter = PlacesListPagingAdapter(this)
-        placeAdapter.setListener()
+        setAdapter()
+        getSharedPref()
 
-        preferences = this.activity!!.getSharedPreferences("latlon", Context.MODE_PRIVATE)
         binding.apply {
             checkIfNewLocation(args.location)
         }
     }
 
-    fun bindDataToAdapter() {
+    private fun setAdapter() {
+        placeAdapter = PlacesListPagingAdapter(this)
+        placeAdapter.setListener()
+    }
+
+    private fun getSharedPref() {
+        preferences = this.activity!!.getSharedPreferences(sharedPrefName, Context.MODE_PRIVATE)
+    }
+
+    private fun getFromSharedPref(key: String) {
+
+    }
+
+    private fun bindDataToAdapter() {
         binding.apply {
             recyclerPlacesList.apply {
                 adapter = placeAdapter.withLoadStateFooter(
@@ -162,10 +177,41 @@ class PlacesListFragment : Fragment(R.layout.fragment_places_list),
     }
 
     private fun checkIfNewLocation(location: String) {
-        getLatestLatLongFromSharedPref(location)
+        if (preferences.contains(sharedPrefKey) && location != nullLocationValue) {
+
+            onNewLocation(location)
+
+        } else if (!preferences.contains(sharedPrefKey)) {
+
+            setLatestLatLongToSharedPref(location)
+
+        } else if (preferences.contains(sharedPrefKey) && location == nullLocationValue) {
+
+            viewModel.onNewLatLon(preferences.getString(sharedPrefKey, ""))
+            bindDataToAdapter()
+
+        }
     }
 
-    fun distanceBetween(
+    private fun onNewLocation(location: String) {
+        val currentLocation = location.split("/")
+        val oldLocation = preferences.getString(sharedPrefKey, "")!!.split("/")
+        if (distanceBetween(
+                currentLocation[0].toDouble(),
+                currentLocation[1].toDouble(),
+                oldLocation[0].toDouble(),
+                oldLocation[1].toDouble(),
+            ) > 100F
+        ) {
+            viewModel.onNewLatLon(location)
+            bindDataToAdapter()
+        } else {
+            viewModel.currentLatLonQuery.value = preferences.getString(sharedPrefKey, "")
+            bindDataToAdapter()
+        }
+    }
+
+    private fun distanceBetween(
         firstLat: Double, firstLon: Double,
         secondLat: Double, secondLon: Double
     ): Float {
@@ -181,35 +227,11 @@ class PlacesListFragment : Fragment(R.layout.fragment_places_list),
 
     }
 
-    private fun getLatestLatLongFromSharedPref(latLong: String) {
-        if (preferences.contains("location") && latLong != "0") {
-            val currentLocation = latLong.split("/")
-            val oldLocation = preferences.getString("location", "")!!.split("/")
-            if (distanceBetween(
-                    currentLocation[0].toDouble(),
-                    currentLocation[1].toDouble(),
-                    oldLocation[0].toDouble(),
-                    oldLocation[1].toDouble(),
-                ) > 100F
-            ) {
-                viewModel.onNewLatLon(latLong)
-                bindDataToAdapter()
-            } else {
-                viewModel.currentLatLonQuery.value = preferences.getString("location", "")
-                bindDataToAdapter()
-            }
-        } else if (!preferences.contains("location")) {
-            setLatestLatLongToSharedPref(latLong)
-        } else if (preferences.contains("location") && latLong == "0") {
-            viewModel.onNewLatLon(preferences.getString("location", ""))
-            bindDataToAdapter()
-        }
-    }
 
     private fun setLatestLatLongToSharedPref(latLong: String) {
-        if (latLong != "0") {
+        if (latLong != nullLocationValue) {
             val editor = preferences.edit()
-            editor.putString("location", latLong)
+            editor.putString(sharedPrefKey, latLong)
             editor.commit()
             viewModel.onNewLatLon(latLong)
             bindDataToAdapter()

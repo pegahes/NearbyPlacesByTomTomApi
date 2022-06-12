@@ -74,7 +74,6 @@ class AskPermissionFragment : Fragment(R.layout.fragment_ask_permission) {
         startPlaceListFragment(location)
     }
 
-
     private val permissionRequester = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { map ->

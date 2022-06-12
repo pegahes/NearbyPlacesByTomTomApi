@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.sotoontest.data.list.Places
 import com.example.sotoontest.databinding.ItemPlaceListBinding
 
-class PlacesListPagingAdapter( val listener: clickListener)
+class PlacesListPagingAdapter(private val listener: clickListener)
     :PagingDataAdapter<Places, PlacesListPagingAdapter.PlacesListAdapterViewHolder>(PlacesComparator()) {
 
     lateinit var _listener: clickListener
